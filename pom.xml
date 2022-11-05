@@ -16,8 +16,11 @@
     <maven.compiler.source>1.7</maven.compiler.source>
     <maven.compiler.target>1.7</maven.compiler.target>
     <junit.version>4.13.2</junit.version>
-    <jetty.version>11.0.12</jetty.version>
+    <jetty.version>9.4.27.v20200227</jetty.version>
+    <javax.servlet.version>4.0.1</javax.servlet.version>
+    <myfaces.version>2.3.1</myfaces.version>
     <primefaces.version>12.0.0</primefaces.version>
+    <jboss.version>3.0.4.Final</jboss.version>
   </properties>
 
   <dependencies>
@@ -32,9 +35,43 @@
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-server</artifactId>
       <version>${jetty.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.eclipse.jetty.toolchain</groupId>
+          <artifactId>jetty-jakarta-servlet-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>${javax.servlet.version}</version>
+    </dependency>
 
+    <dependency>
+      <groupId>org.apache.myfaces.core</groupId>
+      <artifactId>myfaces-api</artifactId>
+      <version>${myfaces.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.myfaces.core</groupId>
+      <artifactId>myfaces-impl</artifactId>
+      <version>${myfaces.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.weld.servlet</groupId>
+      <artifactId>weld-servlet-shaded</artifactId>
+      <version>${jboss.version}</version>
+    </dependency>
+
+    <dependency>
+     <groupId>org.primefaces</groupId>
+     <artifactId>primefaces</artifactId>
+     <version>${primefaces.version}</version>
+   </dependency>
 
   </dependencies>
 
