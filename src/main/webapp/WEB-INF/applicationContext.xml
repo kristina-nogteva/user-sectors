@@ -65,19 +65,7 @@
         <property name="entityManagerFactory" ref="entityManagerFactory"/>
     </bean>
 
-    <bean id="entityManagerFactory"
-          class="org.springframework.orm.jpa.LocalEntityManagerFactoryBean">
-        <property name="jpaProperties">
-            <props>
-                <prop key="toplink.logging.level">FINE</prop>
-                <prop key="toplink.jdbc.driver">org.apache.derby.jdbc.EmbeddedDriver</prop>
-                <prop key="toplink.jdbc.url">jdbc:derby:myfacesOrchestraDB;create=true</prop>
-                <prop key="toplink.jdbc.user">sa</prop>
-                <prop key="toplink.jdbc.password">foobar</prop>
-                <prop key="toplink.target-database">oracle.toplink.essentials.platform.database.DerbyPlatform</prop>
-                <prop key="toplink.ddl-generation">create-tables</prop>
-            </props>
-        </property>
-        <property name="persistenceUnitName" value="default"/>
+    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalEntityManagerFactoryBean">
+        <property name="persistenceUnitName" value="myPersistanceUnit"/>
     </bean>
 </beans>

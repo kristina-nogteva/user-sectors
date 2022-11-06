@@ -6,9 +6,15 @@
               xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
 http://java.sun.com/xml/ns/javaee/web-facesconfig_2_0.xsd">
 
+    <application>
+        <el-resolver>
+            org.springframework.web.jsf.el.SpringBeanFacesELResolver
+        </el-resolver>
+    </application>
+
     <managed-bean>
         <managed-bean-name>userSectorsBackingBean</managed-bean-name>
-        <managed-bean-class>com.kristina.user.sectors.UserSectorsBackingBean</managed-bean-class>
+        <managed-bean-class>com.kristina.user.sectors.client.UserSectorsBackingBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
 
