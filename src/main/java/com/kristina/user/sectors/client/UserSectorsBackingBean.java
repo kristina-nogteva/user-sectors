@@ -1,7 +1,6 @@
 package com.kristina.user.sectors;
 
-//import jakarta.annotation.PostConstruct;
-
+import javax.annotation.PostConstruct;
 import javax.faces.model.SelectItem;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +9,7 @@ public class UserSectorsBackingBean {
 
     private List<SelectItem> sectorsMenuItems;
 
-    //@PostConstruct
+    @PostConstruct
     private void init(){
         initializeSectorsMenuItems();
     }
