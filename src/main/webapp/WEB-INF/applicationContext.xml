@@ -3,16 +3,23 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:tx="http://www.springframework.org/schema/tx"
-       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="
     http://www.springframework.org/schema/beans
-    http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
-    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
-    http://www.springframework.org/schema/aop
-    http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
+    http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+    http://www.springframework.org/schema/tx
+    http://www.springframework.org/schema/tx/spring-tx-4.3.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context-4.3.xsd">
 
     <!-- 1. initialization of all orchestra modules (required for core15 module) -->
     <import resource="classpath*:/META-INF/spring-orchestra-init.xml" />
+
+    <bean class="com.kristina.user.sectors.config.AppConfig"/>
+    <context:annotation-config/>
+    <context:component-scan base-package="com.kristina.user.sectors"/>
+
+    <tx:annotation-driven />
 
     <!-- 2. the conversation scopes -->
     <bean class="org.springframework.beans.factory.config.CustomScopeConfigurer">
@@ -59,7 +66,10 @@
     <!-- 5. persistence -->
     <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/>
 
-    <tx:annotation-driven />
+    <bean id="org.apache.myfaces.orchestra.conversation.ConversationContextFactory"
+          class="org.apache.myfaces.orchestra.conversation.ConversationContextFactoryImpl">
+        <property name="timeoutMins" value="120" />
+    </bean>
 
     <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
         <property name="entityManagerFactory" ref="entityManagerFactory"/>
@@ -68,4 +78,6 @@
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalEntityManagerFactoryBean">
         <property name="persistenceUnitName" value="myPersistanceUnit"/>
     </bean>
+
+    <bean id="userSectorsBackingBean" class="com.kristina.user.sectors.client.UserSectorsBackingBean"/>
 </beans>
