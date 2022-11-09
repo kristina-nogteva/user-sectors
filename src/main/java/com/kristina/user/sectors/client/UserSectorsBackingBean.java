@@ -1,18 +1,26 @@
 package com.kristina.user.sectors.client;
 
 import com.kristina.user.sectors.model.Sector;
+import com.kristina.user.sectors.model.User;
 import com.kristina.user.sectors.repository.SectorRepository;
+import com.kristina.user.sectors.repository.UserRepository;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.myfaces.orchestra.conversation.annotations.ConversationName;
+import org.apache.myfaces.orchestra.viewController.annotations.InitView;
+import org.apache.myfaces.orchestra.viewController.annotations.ViewController;
+import org.apache.myfaces.shared.util.MessageUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
-import java.io.Serializable;
+import javax.validation.Valid;
+import javax.validation.constraints.AssertTrue;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -22,22 +30,44 @@ import static java.util.stream.Collectors.toList;
 
 @Component
 @Scope("conversation.access")
-@ConversationName("userSectorsBackingBean")
-public class UserSectorsBackingBean implements Serializable {
+@ViewController(viewIds = "/register.xhtml")
+public class UserSectorsBackingBean extends ViewBase {
 
     @Autowired
     private SectorRepository sectorRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Valid
+    private User user;
+    boolean savedOk = false;
+
+    @AssertTrue(message = "Please agree to terms")
+    boolean agreeToTerms = false;
     private List<SelectItem> sectorsMenuItems;
 
-    @PostConstruct
+    @InitView
     public void init(){
-        initializeSectorsMenuItems();
+        formId = "user-sectors-form";
+        if (sectorsMenuItems == null) initializeSectorsMenuItems();
+        //String username = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("username");
+        if (user == null) {
+            createNewUser();
+        }
     }
 
     @Transactional
     public void save(){
-        //TODO
+        validate(this);
+        userRepository.save(user);
+        savedOk = true;
+        MessageUtils.addMessage(FacesMessage.SEVERITY_INFO, "User registered",null);
+    }
+
+    public void cancel() throws IOException {
+        ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
+        externalContext.redirect("login.xhtml");
     }
 
     private void initializeSectorsMenuItems(){
@@ -78,7 +108,31 @@ public class UserSectorsBackingBean implements Serializable {
         }
     }
 
+    private void createNewUser(){
+        user = new User();
+    }
+
     public List<SelectItem> getSectorsMenuItems() {
         return sectorsMenuItems;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public boolean isSavedOk() {
+        return savedOk;
+    }
+
+    public boolean isAgreeToTerms() {
+        return agreeToTerms;
+    }
+
+    public void setAgreeToTerms(boolean agreeToTerms) {
+        this.agreeToTerms = agreeToTerms;
+    }
+
+    public String getFormId(){
+        return formId;
     }
 }

@@ -13,9 +13,32 @@ http://java.sun.com/xml/ns/javaee/web-facesconfig_2_0.xsd">
     </application>
 
     <managed-bean>
+        <managed-bean-name>loginBackingBean</managed-bean-name>
+        <managed-bean-class>com.kristina.user.sectors.client.LoginBackingBean</managed-bean-class>
+        <managed-bean-scope>request</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
         <managed-bean-name>userSectorsBackingBean</managed-bean-name>
         <managed-bean-class>com.kristina.user.sectors.client.UserSectorsBackingBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
+        <managed-bean-scope>request</managed-bean-scope>
     </managed-bean>
+
+    <converter>
+        <converter-for-class>com.kristina.user.sectors.model.Sector</converter-for-class>
+        <converter-class>com.kristina.user.sectors.client.jsfconverters.SectorConverter</converter-class>
+    </converter>
+
+    <application>
+        <el-resolver>
+            org.primefaces.application.exceptionhandler.PrimeExceptionHandlerELResolver
+        </el-resolver>
+    </application>
+
+    <factory>
+        <exception-handler-factory>
+            org.primefaces.application.exceptionhandler.PrimeExceptionHandlerFactory
+        </exception-handler-factory>
+    </factory>
 
 </faces-config>

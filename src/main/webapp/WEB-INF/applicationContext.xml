@@ -25,17 +25,6 @@
     <bean class="org.springframework.beans.factory.config.CustomScopeConfigurer">
         <property name="scopes">
             <map>
-                <entry key="conversation.manual">
-                    <bean class="org.apache.myfaces.orchestra.conversation.spring.SpringConversationScope">
-                        <property name="timeout" value="30" />
-                        <property name="advices">
-                            <list>
-                                <ref bean="persistentContextConversationInterceptor"/>
-                            </list>
-                        </property>
-                    </bean>
-                </entry>
-
                 <entry key="conversation.access">
                     <bean class="org.apache.myfaces.orchestra.conversation.spring.SpringConversationScope">
                         <property name="timeout" value="30" />
@@ -79,5 +68,7 @@
         <property name="persistenceUnitName" value="myPersistanceUnit"/>
     </bean>
 
-    <bean id="userSectorsBackingBean" class="com.kristina.user.sectors.client.UserSectorsBackingBean"/>
+    <bean id="userSectorsBackingBean" class="com.kristina.user.sectors.client.UserSectorsBackingBean"  scope="conversation.access"/>
+    <bean id="loginBackingBean" class="com.kristina.user.sectors.client.LoginBackingBean"  scope="conversation.access"/>
+    <bean id="applicationContextProvider" class="com.kristina.user.sectors.config.ApplicationContextProvider"/>
 </beans>

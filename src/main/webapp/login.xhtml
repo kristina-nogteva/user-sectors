@@ -1,0 +1,29 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <title>User Sectors</title>
+</h:head>
+
+<h:form id="login-form">
+    <h:body>
+        <ui:param name="bean" value="#{loginBackingBean}"/>
+
+        <p:panel id="mainPanel" header="Please login">
+            <h:panelGrid columns="2">
+                <p:outputLabel for="username" value="Username:"/>
+                <p:inputText id="username" label="username" value="#{bean.username}"/>
+
+                <p:outputLabel for="password" value="Password:"/>
+                <p:password id="password" label="password" value="#{bean.password}" toggleMask="true"/>
+
+                <p:commandButton value="Login" action="#{bean.login}"/>
+                <p:commandButton value="Register" action="#{bean.register}"/>
+            </h:panelGrid>
+        </p:panel>
+
+    </h:body>
+</h:form>
+</html>
