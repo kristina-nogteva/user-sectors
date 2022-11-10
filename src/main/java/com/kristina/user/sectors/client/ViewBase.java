@@ -40,4 +40,8 @@ public class ViewBase implements Serializable {
         }
         return true;
     }
+
+    public String getFormId() {
+        return formId;
+    }
 }

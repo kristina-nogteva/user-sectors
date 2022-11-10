@@ -1,10 +1,20 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
       xmlns:p="http://primefaces.org/ui">
 
 <h:head>
     <title>User Sectors</title>
+
+    <style type="text/css">
+        .ui-inputfield {
+            width: 224px;
+        }
+        a {
+            text-decoration: none;
+        }
+    </style>
 </h:head>
 
 <h:form id="login-form">
@@ -12,15 +22,28 @@
         <ui:param name="bean" value="#{loginBackingBean}"/>
 
         <p:panel id="mainPanel" header="Please login">
+
+            <p:ajaxExceptionHandler update="exceptionMessages, messages"/>
+
+            <p:staticMessage id="exceptionMessages"
+                             severity="error"
+                             detail="#{pfExceptionHandler.message}"
+                             escape="false"
+                             style="#{pfExceptionHandler.message == null ? 'display:none' : 'display:block'}; font-weight:bold;"/>
+
+            <p:messages id="messages" showSummary="true" closable="true">
+                <p:autoUpdate/>
+            </p:messages>
+
             <h:panelGrid columns="2">
                 <p:outputLabel for="username" value="Username:"/>
-                <p:inputText id="username" label="username" value="#{bean.username}"/>
+                <p:inputText id="username" required="true" label="username" value="#{bean.username}"/>
 
                 <p:outputLabel for="password" value="Password:"/>
-                <p:password id="password" label="password" value="#{bean.password}" toggleMask="true"/>
+                <p:password id="password" required="true" label="password" value="#{bean.password}" toggleMask="true"/>
 
                 <p:commandButton value="Login" action="#{bean.login}"/>
-                <p:commandButton value="Register" action="#{bean.register}"/>
+                <p:linkButton  value="Register" outcome="user-sectors.xhtml?init=true"/>
             </h:panelGrid>
         </p:panel>
 

@@ -22,6 +22,9 @@ public class User extends DomainObject_base {
     @Column(name = "PASSWORD", unique = true, nullable = false, length = 50)
     private String password;
 
+    @Column(name = "PASSWORD_SALT", unique = true, nullable = false, length = 50)
+    private String salt;
+
     @NotBlank(message = "Please enter your name")
     @Column(name = "FULL_NAME", unique = true, nullable = false, length = 50)
     private String fullName;
@@ -46,7 +49,9 @@ public class User extends DomainObject_base {
     }
 
     public void setSectors(List<Sector> sectors){
-        userSectors = sectors.stream().map(sector -> new UserSector(this, sector)).collect(Collectors.toList());
+        userSectors.clear();
+        sectors.stream().map(sector -> new UserSector(this, sector))
+                .forEach(userSector -> userSectors.add(userSector));
     }
 
     public List<Sector> getSectors(){
@@ -76,5 +81,13 @@ public class User extends DomainObject_base {
 
     public void setFullName(String fullName) {
         this.fullName = fullName;
+    }
+
+    public String getSalt() {
+        return salt;
+    }
+
+    public void setSalt(String salt) {
+        this.salt = salt;
     }
 }

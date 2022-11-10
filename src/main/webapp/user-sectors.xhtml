@@ -14,6 +14,9 @@
         .ui-selectcheckboxmenu {
             width: 224px;
         }
+        a {
+            text-decoration: none;
+        }
     </style>
 
 </h:head>
@@ -24,9 +27,9 @@
 
     <h:body>
 
-        <p:ajaxExceptionHandler update="exceptionMessages, messages" />
-
         <p:panel id="main-panel" header="Please enter your name and pick the sectors you are currently involved in">
+
+            <p:ajaxExceptionHandler update="exceptionMessages, messages"/>
 
             <p:staticMessage id="exceptionMessages"
                              severity="error"
@@ -40,13 +43,25 @@
 
             <h:panelGrid columns="2" style="margin-bottom:20px;">
                 <p:outputLabel for="username" value="Username:"/>
-                <p:inputText id="username" label="username" value="#{bean.user.username}" disabled="#{bean.savedOk}"/>
+                <p:inputText id="username"
+                             label="username"
+                             value="#{bean.user.username}"
+                             disabled="#{bean.savedOk or bean.editView}"/>
 
-                <p:outputLabel for="password" value="Password:"/>
-                <p:password id="password" label="password" value="#{bean.user.password}" feedback="true" toggleMask="true" disabled="#{bean.savedOk}"/>
+                <p:outputLabel for="password" value="Password:" rendered="#{!bean.editView}"/>
+                <p:password id="password"
+                            label="password"
+                            value="#{bean.user.password}"
+                            feedback="true"
+                            toggleMask="true"
+                            disabled="#{bean.savedOk}"
+                            rendered="#{!bean.editView}"/>
 
                 <p:outputLabel for="name" value="Name:"/>
-                <p:inputText id="name" label="name" value="#{bean.user.fullName}" disabled="#{bean.savedOk}"/>
+                <p:inputText id="name"
+                             label="name"
+                             value="#{bean.user.fullName}"
+                             disabled="#{bean.savedOk}"/>
 
                 <p:outputLabel for="sectors" value="Sectors:"/>
                 <p:selectCheckboxMenu id="sectors"
@@ -59,15 +74,25 @@
                     <f:selectItems value="#{bean.sectorsMenuItems}" itemDisabled="#{!sector.getSubCategories().isEmpty()}"/>
                 </p:selectCheckboxMenu>
 
-                <p:outputLabel for="agree-to-terms" value="Agree to terms:"/>
-                <p:selectBooleanCheckbox id="agree-to-terms" value="#{bean.agreeToTerms}" disabled="#{bean.savedOk}"/>
+                <p:outputLabel for="agree-to-terms" value="Agree to terms:" rendered="#{!bean.editView}"/>
+                <p:selectBooleanCheckbox id="agree-to-terms"
+                                         value="#{bean.agreeToTerms}"
+                                         disabled="#{bean.savedOk}"
+                                         rendered="#{!bean.editView}"/>
             </h:panelGrid>
 
-            <p:commandButton value="Save" action="#{bean.save}" rendered="#{!bean.savedOk}" update="main-panel"/>
-            <p:commandLink value="Cancel" action="#{bean.cancel}" rendered="#{!bean.savedOk}" style="margin-left:20px;"/>
+            <p:commandButton value="Save"
+                             action="#{bean.save}"
+                             rendered="#{!bean.savedOk}"
+                             update="main-panel"/>
+            <p:commandButton value="Edit"
+                             action="#{bean.edit}"
+                             rendered="#{bean.savedOk and bean.editView}"
+                             update="main-panel"/>
 
-            <p:commandButton value="Login" action="#{bean.cancel}" rendered="#{bean.savedOk}"/>
-
+            <p:link value="#{bean.savedOk ? bean.editView ? 'Logout' : 'Login' : 'Cancel'}"
+                           outcome="login.xhtml"
+                           style="margin-left:20px;"/>
         </p:panel>
     </h:body>
 </h:form>

@@ -4,33 +4,36 @@ import com.kristina.user.sectors.model.Sector;
 import com.kristina.user.sectors.model.User;
 import com.kristina.user.sectors.repository.SectorRepository;
 import com.kristina.user.sectors.repository.UserRepository;
+import com.kristina.user.sectors.service.PasswordValidationAndEncryptionService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.myfaces.orchestra.viewController.annotations.InitView;
 import org.apache.myfaces.orchestra.viewController.annotations.ViewController;
 import org.apache.myfaces.shared.util.MessageUtils;
+import org.primefaces.PrimeFaces;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.faces.application.FacesMessage;
-import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
 import javax.validation.Valid;
 import javax.validation.constraints.AssertTrue;
-import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 
 @Component
 @Scope("conversation.access")
-@ViewController(viewIds = "/register.xhtml")
+@ViewController(viewIds = "/user-sectors.xhtml")
 public class UserSectorsBackingBean extends ViewBase {
 
     @Autowired
@@ -39,35 +42,65 @@ public class UserSectorsBackingBean extends ViewBase {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private PasswordValidationAndEncryptionService passwordValidationAndEncryptionService;
+
     @Valid
     private User user;
     boolean savedOk = false;
+    boolean editView = false;
 
     @AssertTrue(message = "Please agree to terms")
     boolean agreeToTerms = false;
     private List<SelectItem> sectorsMenuItems;
 
     @InitView
-    public void init(){
+    public void init() {
         formId = "user-sectors-form";
-        if (sectorsMenuItems == null) initializeSectorsMenuItems();
-        //String username = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("username");
-        if (user == null) {
-            createNewUser();
+        if ("true".equals(FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("init"))){
+            savedOk = false;
+            if (sectorsMenuItems == null) initializeSectorsMenuItems();
+            initializeUser();
+            PrimeFaces.current().ajax().update(formId);
         }
     }
 
-    @Transactional
-    public void save(){
-        validate(this);
-        userRepository.save(user);
-        savedOk = true;
-        MessageUtils.addMessage(FacesMessage.SEVERITY_INFO, "User registered",null);
+    public void edit(){
+        savedOk = false;
+        PrimeFaces.current().ajax().update(formId);
     }
 
-    public void cancel() throws IOException {
-        ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
-        externalContext.redirect("login.xhtml");
+    @Transactional
+    public void save() throws NoSuchAlgorithmException, NoSuchProviderException {
+        validate(this);
+        if (!editView){
+            passwordValidationAndEncryptionService.validatePassword(user.getPassword());
+            passwordValidationAndEncryptionService.encryptPassword(user);
+            userRepository.save(user);
+            MessageUtils.addMessage(FacesMessage.SEVERITY_INFO, "User registered",null);
+        }else {
+            MessageUtils.addMessage(FacesMessage.SEVERITY_INFO, "User data saved",null);
+        }
+        savedOk = true;
+
+    }
+
+    private void initializeUser(){
+        String username = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("username");
+        if (StringUtils.isBlank(username)) {
+            createNewUser();
+            editView = false;
+        } else {
+            Optional<User> optionalUser = userRepository.findById(username);
+            if (!optionalUser.isPresent()) throw new IllegalArgumentException("User not found!");
+            user = optionalUser.get();
+            editView = true;
+            agreeToTerms = true;
+        }
+    }
+
+    private void createNewUser(){
+        user = new User();
     }
 
     private void initializeSectorsMenuItems(){
@@ -108,10 +141,6 @@ public class UserSectorsBackingBean extends ViewBase {
         }
     }
 
-    private void createNewUser(){
-        user = new User();
-    }
-
     public List<SelectItem> getSectorsMenuItems() {
         return sectorsMenuItems;
     }
@@ -132,7 +161,7 @@ public class UserSectorsBackingBean extends ViewBase {
         this.agreeToTerms = agreeToTerms;
     }
 
-    public String getFormId(){
-        return formId;
+    public boolean isEditView() {
+        return editView;
     }
 }
