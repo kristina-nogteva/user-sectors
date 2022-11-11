@@ -43,7 +43,7 @@
                 <p:password id="password" required="true" label="password" value="#{bean.password}" toggleMask="true"/>
 
                 <p:commandButton value="Login" action="#{bean.login}"/>
-                <p:linkButton  value="Register" outcome="user-sectors.xhtml?init=true"/>
+                <p:commandButton  value="Register" action="#{bean.register}" immediate="true"/>
             </h:panelGrid>
         </p:panel>
 

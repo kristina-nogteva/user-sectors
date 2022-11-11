@@ -92,7 +92,9 @@
 
             <p:link value="#{bean.savedOk ? bean.editView ? 'Logout' : 'Login' : 'Cancel'}"
                            outcome="login.xhtml"
+                           actionListener="#{bean.logout}"
                            style="margin-left:20px;"/>
+
         </p:panel>
     </h:body>
 </h:form>

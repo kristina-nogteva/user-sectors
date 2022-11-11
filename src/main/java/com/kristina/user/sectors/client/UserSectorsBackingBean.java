@@ -1,10 +1,12 @@
 package com.kristina.user.sectors.client;
 
+import com.kristina.user.sectors.exception.UnauthorizedException;
 import com.kristina.user.sectors.model.Sector;
 import com.kristina.user.sectors.model.User;
 import com.kristina.user.sectors.repository.SectorRepository;
 import com.kristina.user.sectors.repository.UserRepository;
 import com.kristina.user.sectors.service.PasswordValidationAndEncryptionService;
+import com.kristina.user.sectors.service.SessionService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.myfaces.orchestra.viewController.annotations.InitView;
 import org.apache.myfaces.orchestra.viewController.annotations.ViewController;
@@ -21,12 +23,10 @@ import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
 import javax.validation.Valid;
 import javax.validation.constraints.AssertTrue;
+import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
@@ -45,29 +45,27 @@ public class UserSectorsBackingBean extends ViewBase {
     @Autowired
     private PasswordValidationAndEncryptionService passwordValidationAndEncryptionService;
 
+    @Autowired
+    private SessionService sessionService;
+
     @Valid
     private User user;
-    boolean savedOk = false;
-    boolean editView = false;
-
     @AssertTrue(message = "Please agree to terms")
-    boolean agreeToTerms = false;
+    private boolean agreeToTerms = false;
     private List<SelectItem> sectorsMenuItems;
+    private boolean editView = false;
+    private boolean savedOk = false;
 
     @InitView
-    public void init() {
-        formId = "user-sectors-form";
-        if ("true".equals(FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("init"))){
+    public void initialize() throws UnsupportedEncodingException, UnauthorizedException {
+        Map<String, String> requestParameterMap = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+        if (requestParameterMap.containsKey("initialize")) {
+            formId = "user-sectors-form";
             savedOk = false;
+            initializeUser(requestParameterMap);
             if (sectorsMenuItems == null) initializeSectorsMenuItems();
-            initializeUser();
             PrimeFaces.current().ajax().update(formId);
         }
-    }
-
-    public void edit(){
-        savedOk = false;
-        PrimeFaces.current().ajax().update(formId);
     }
 
     @Transactional
@@ -82,25 +80,30 @@ public class UserSectorsBackingBean extends ViewBase {
             MessageUtils.addMessage(FacesMessage.SEVERITY_INFO, "User data saved",null);
         }
         savedOk = true;
-
     }
 
-    private void initializeUser(){
-        String username = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("username");
-        if (StringUtils.isBlank(username)) {
-            createNewUser();
-            editView = false;
-        } else {
-            Optional<User> optionalUser = userRepository.findById(username);
+    @Transactional
+    public void logout() throws UnsupportedEncodingException {
+        sessionService.invalidateUserSession(user);
+    }
+
+    public void edit(){
+        savedOk = false;
+        PrimeFaces.current().ajax().update(formId);
+    }
+
+    private void initializeUser(Map<String, String> requestParameterMap) throws UnauthorizedException, UnsupportedEncodingException {
+        if (requestParameterMap.containsKey("username")) {
+            Optional<User> optionalUser = userRepository.findById(requestParameterMap.get("username"));
             if (!optionalUser.isPresent()) throw new IllegalArgumentException("User not found!");
             user = optionalUser.get();
+            sessionService.validateUserSessionId(user);
             editView = true;
             agreeToTerms = true;
+        } else {
+            user = new User();
+            editView = false;
         }
-    }
-
-    private void createNewUser(){
-        user = new User();
     }
 
     private void initializeSectorsMenuItems(){

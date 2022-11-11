@@ -29,6 +29,9 @@ public class User extends DomainObject_base {
     @Column(name = "FULL_NAME", unique = true, nullable = false, length = 50)
     private String fullName;
 
+    @Column(name = "SESSION_ID", unique = true, length = 50)
+    private String sessionId;
+
     @NotEmpty(message = "Please select at least one sector")
     @OneToMany(targetEntity = UserSector.class, fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserSector> userSectors;
@@ -89,5 +92,13 @@ public class User extends DomainObject_base {
 
     public void setSalt(String salt) {
         this.salt = salt;
+    }
+
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
     }
 }

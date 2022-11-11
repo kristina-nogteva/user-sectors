@@ -25,11 +25,10 @@ public class SectorConverter implements Converter {
     @Override
     public Object getAsObject(FacesContext facesContext, UIComponent uiComponent, String value) throws ConverterException {
 
-        if (!StringUtils.isEmpty(value)) {
-            if (sectorRepository == null) {
-                sectorRepository = ApplicationContextProvider.getApplicationContext().getBean(SectorRepository.class);
-            }
-            return sectorRepository.findById(Integer.parseInt(ConverterUtils.extractValue("id", value))).get();
+        if (!StringUtils.isBlank(value)) {
+            initializeRepository();
+            Integer sectorId = Integer.parseInt(ConverterUtils.extractValue("id", value));
+            return sectorRepository.findById(sectorId).get();
         }
         return null;
     }
@@ -43,5 +42,11 @@ public class SectorConverter implements Converter {
             return object.toString();
         }
         return null;
+    }
+
+    private void initializeRepository(){
+        if (sectorRepository == null) {
+            sectorRepository = ApplicationContextProvider.getApplicationContext().getBean(SectorRepository.class);
+        }
     }
 }
