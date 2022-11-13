@@ -35,6 +35,7 @@
                              severity="error"
                              detail="#{pfExceptionHandler.message}"
                              escape="false"
+                             closable="true"
                              style="#{pfExceptionHandler.message == null ? 'display:none' : 'display:block'}; font-weight:bold;"/>
 
             <p:messages id="messages" showSummary="true" closable="true">
@@ -90,9 +91,8 @@
                              rendered="#{bean.savedOk and bean.editView}"
                              update="main-panel"/>
 
-            <p:link value="#{bean.savedOk ? bean.editView ? 'Logout' : 'Login' : 'Cancel'}"
-                           outcome="login.xhtml"
-                           actionListener="#{bean.logout}"
+            <p:commandButton value="#{bean.editView ? 'Logout' : 'Login'}"
+                           action="#{bean.logout}" immediate="true"
                            style="margin-left:20px;"/>
 
         </p:panel>

@@ -4,7 +4,6 @@ import com.kristina.user.sectors.exception.UnauthorizedException;
 import com.kristina.user.sectors.model.User;
 import com.kristina.user.sectors.service.SessionService;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.http.Cookie;
@@ -29,19 +28,25 @@ public class SessionServiceImpl implements SessionService {
     public void validateUserSessionId(User user) throws UnauthorizedException, UnsupportedEncodingException {
         Cookie cookie = (Cookie) FacesContext.getCurrentInstance().getExternalContext().getRequestCookieMap().get("user-session");
         String sessionId = URLDecoder.decode(cookie.getValue(), "UTF-8");
-        if (!sessionId.equals(user.getSessionId())) throw new UnauthorizedException();
+        if (sessionId == null || !sessionId.equals(user.getSessionId())) throw new UnauthorizedException();
     }
 
     @Override
-    public void invalidateUserSession(User user){
+    public void invalidateUserSession(User user) throws UnsupportedEncodingException {
         user.setSessionId(null);
-        FacesContext.getCurrentInstance().getExternalContext().getRequestCookieMap().put("user-session", null);
+        createCookie(null);
     }
 
     private void createCookie(String sessionId) throws UnsupportedEncodingException{
         Map<String, Object> properties = new HashMap<>();
         properties.put("maxAge", 31536000);
         properties.put("path", "/");
-        FacesContext.getCurrentInstance().getExternalContext().addResponseCookie("user-session", URLEncoder.encode(sessionId, "UTF-8"), properties);
+
+        if (sessionId != null){
+            FacesContext.getCurrentInstance().getExternalContext().addResponseCookie("user-session", URLEncoder.encode(sessionId, "UTF-8"), properties);
+        }else {
+            FacesContext.getCurrentInstance().getExternalContext().addResponseCookie("user-session", null, properties);
+        }
+
     }
 }

@@ -23,6 +23,7 @@ import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
 import javax.validation.Valid;
 import javax.validation.constraints.AssertTrue;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
@@ -66,6 +67,7 @@ public class UserSectorsBackingBean extends ViewBase {
             if (sectorsMenuItems == null) initializeSectorsMenuItems();
             PrimeFaces.current().ajax().update(formId);
         }
+        if (editView) sessionService.validateUserSessionId(user);
     }
 
     @Transactional
@@ -83,8 +85,11 @@ public class UserSectorsBackingBean extends ViewBase {
     }
 
     @Transactional
-    public void logout() throws UnsupportedEncodingException {
-        sessionService.invalidateUserSession(user);
+    public void logout() throws IOException {
+        if (editView){
+            sessionService.invalidateUserSession(user);
+        }
+        FacesContext.getCurrentInstance().getExternalContext().redirect("login.xhtml");
     }
 
     public void edit(){
@@ -97,7 +102,6 @@ public class UserSectorsBackingBean extends ViewBase {
             Optional<User> optionalUser = userRepository.findById(requestParameterMap.get("username"));
             if (!optionalUser.isPresent()) throw new IllegalArgumentException("User not found!");
             user = optionalUser.get();
-            sessionService.validateUserSessionId(user);
             editView = true;
             agreeToTerms = true;
         } else {

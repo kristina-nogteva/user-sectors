@@ -43,7 +43,7 @@ public class User extends DomainObject_base {
 
     @AssertTrue(message = "Name must only contain letters")
     public boolean isFullNameValid(){
-        return fullName.trim().chars().allMatch(Character::isLetter);
+        return fullName.replaceAll("\\s","").chars().allMatch(Character::isLetter);
     }
 
     @Override

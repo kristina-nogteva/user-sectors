@@ -1,8 +1,5 @@
 package com.kristina.user.sectors.client;
 
-import org.apache.myfaces.orchestra.conversation.ConversationUtils;
-import org.apache.myfaces.orchestra.conversation.annotations.ConversationName;
-
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.ValidationException;

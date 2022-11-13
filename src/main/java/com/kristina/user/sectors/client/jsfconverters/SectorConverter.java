@@ -37,7 +37,9 @@ public class SectorConverter implements Converter {
     public String getAsString(FacesContext facesContext, UIComponent uiComponent, Object object) throws ConverterException {
 
         if (object != null && object instanceof Sector) {
-            return ((Sector)object).getId().toString();
+            Integer id = ((Sector)object).getId();
+            if (id == null) return null;
+            return id.toString();
         } else if (object != null && object instanceof String) {
             return object.toString();
         }
